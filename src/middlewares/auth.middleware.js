@@ -1,21 +1,24 @@
-const jwt = require('jsonwebtoken');
+const { verify } = require('../services/auth.service');
+const { responseHttpException } = require('../httpResponse/response');
+const httpStatusCodes = require('../errors/status-codes/http-status-codes');
 module.exports = (req, res, next) => {
   const header = req.headers.authorization;
 
-  if (!header) return res.status(401).send({ error: 'No Token Provided' });
+  if (!header) return responseHttpException('No Token Provided', req.method, res, httpStatusCodes.UNAUTHORIZED);
 
   const parts = header.split(' ');
 
-  if (!parts.length == 2) return res.status(401).send({ error: 'Token Error' });
+  if (parts.length > 2) return responseHttpException('Token Error', req.method, res, httpStatusCodes.UNAUTHORIZED);
 
-  const [scheme, token] = parts;
+  const [bearer, token] = parts;
+  if (!/^Bearer$/i.test(bearer))
+    return responseHttpException('Token Malformatted', req.method, res, httpStatusCodes.UNAUTHORIZED);
 
-  if (!/^Bearer$/i.test(scheme)) return res.status(401).send({ error: 'Token Malformatted' });
-
-  jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
-    if (err) return res.status(401).send({ error: 'Invalid Token' });
-
-    req.userId = decoded.id;
-    return next();
-  });
+  try {
+    const verified = verify(token);
+    req.userId = verified.id;
+    next();
+  } catch (err) {
+    responseHttpException(err.message, req.method, res, httpStatusCodes.UNAUTHORIZED);
+  }
 };

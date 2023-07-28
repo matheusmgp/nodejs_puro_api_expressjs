@@ -16,7 +16,7 @@ module.exports = {
       { expiresIn: 60 * 60 }
     );
   },
-  decodeToken(token) {
+  verify(token) {
     return jwt.verify(token, process.env.JWT_KEY);
   },
 };

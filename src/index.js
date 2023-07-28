@@ -1,14 +1,13 @@
 require('dotenv').config();
-const express = require('express');
-const { routes } = require('./routes/products.routes');
-const { userRoutes } = require('./routes/users.routes');
 require('./infra/database');
+
+const express = require('express');
+const routes = require('./routes');
+
 const app = express();
 app.use(express.json());
-
 app.use(routes);
-app.use(userRoutes);
 
-app.listen(3333, () => {
-  console.info(`API running on port ${3333}`);
+app.listen(process.env.PORT, () => {
+  console.info(`API running on port ${process.env.PORT}`);
 });
