@@ -12,11 +12,11 @@ module.exports = {
       {
         data: payload,
       },
-      'some-key',
+      process.env.JWT_KEY,
       { expiresIn: 60 * 60 }
     );
   },
   decodeToken(token) {
-    return jwt.verify(token, 'some-key');
+    return jwt.verify(token, process.env.JWT_KEY);
   },
 };

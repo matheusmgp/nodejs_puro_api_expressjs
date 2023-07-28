@@ -11,6 +11,7 @@ module.exports = {
     return await Product.create(payload);
   },
   async update(id, payload) {
+    console.log(payload);
     return await Product.findByIdAndUpdate({ _id: id }, payload, { new: true });
   },
 };

@@ -1,9 +1,21 @@
 module.exports = {
   responseHttp(data, res) {
-    if (!data) {
-      res.status(400).json({ message: 'Problema na requisição' });
-    } else {
-      res.status(200).json(data);
-    }
+    res.status(200).json(data);
+  },
+  responseHttpException(error, method, res, code) {
+    res.status(code).send(new HttpExceptionResponse(code, error, method));
   },
 };
+
+class HttpExceptionResponse {
+  constructor(statusCode, error, method) {
+    this.error = error;
+    this.method = method;
+    this.statusCode = statusCode;
+    this.timestamp = new Date().toISOString();
+  }
+  statusCode;
+  error;
+  timestamp;
+  method;
+}
