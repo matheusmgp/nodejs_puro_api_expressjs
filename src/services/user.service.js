@@ -1,6 +1,6 @@
 const UserRepository = require('../repositories/user.repository');
 const authService = require('../services/auth.service');
-
+const InvalidEmailPasswordError = require('../errors/invalid-email-password-error');
 module.exports = {
   async create(payload) {
     return await UserRepository.create(payload);
@@ -13,11 +13,11 @@ module.exports = {
     let token;
     const found = await this.findByEmail(email);
 
-    if (found == null) {
-      throw new Error();
+    if (password === undefined || password == '' || found == null) {
+      throw new InvalidEmailPasswordError(`Invalid email or password`);
     }
     if (!(await authService.comparePassword(password, found.password))) {
-      throw new Error();
+      throw new InvalidEmailPasswordError(`Invalid email or password`);
     }
     token = authService.generateToken(JSON.parse(JSON.stringify(found)));
     return { token };
